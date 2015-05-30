@@ -23,8 +23,9 @@ node[:deploy].each do |application, deploy|
   # Allow deploy user to restart workers
   template "/etc/sudoers.d/#{deploy[:user]}" do
     mode 0440
-    source "sudoer.erb"
-    variables :user => deploy[:user]
+    source 'sudoer.erb'
+    variables user: deploy[:user],
+              environment: OpsWorks::Escape.escape_double_quotes(deploy[:environment_variables])
   end
 
   if node[:sidekiq][application]
