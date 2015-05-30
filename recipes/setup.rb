@@ -23,8 +23,7 @@ node[:deploy].each do |application, deploy|
   template "/etc/sudoers.d/#{deploy[:user]}" do
     mode 0440
     source 'sudoer.erb'
-    variables user: deploy[:user],
-              environment: OpsWorks::Escape.escape_double_quotes(deploy[:environment_variables])
+    variables user: deploy[:user]
   end
 
   if node[:sidekiq][application]
@@ -66,6 +65,7 @@ node[:deploy].each do |application, deploy|
       variables(deploy: deploy,
                 application: application,
                 workers: workers,
+                environment_variables: OpsWorks::Escape.escape_double_quotes(deploy[:environment_variables]),
                 syslog: node[:sidekiq][application][:syslog])
       notifies :reload, resources(service: 'monit'), :immediately
     end
